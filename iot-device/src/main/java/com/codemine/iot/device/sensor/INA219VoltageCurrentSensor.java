@@ -16,7 +16,7 @@ import java.io.IOException;
  */
 public class INA219VoltageCurrentSensor extends PollingSensor<INA219VoltageCurrentSensor.Data> {
 
-    private I2CDevice analogDigitalConverter;
+    private I2CDevice device;
     private static int DATA_BYTE_SIZE = 2;
     private static int DATA_READ_OFFSET = 0;
     private static int DATA_VOLTAGE_ADDRESS = 2;
@@ -48,15 +48,15 @@ public class INA219VoltageCurrentSensor extends PollingSensor<INA219VoltageCurre
     }
 
     public INA219VoltageCurrentSensor(I2CBus i2cBus, int deviceAddress) throws IOException {
-        analogDigitalConverter = i2cBus.getDevice(deviceAddress);
+        device = i2cBus.getDevice(deviceAddress);
     }
 
     @Override
     public INA219VoltageCurrentSensor.Data readData() throws Throwable {
         byte[] voltageInByte = new byte[DATA_BYTE_SIZE];
-        analogDigitalConverter.read(DATA_VOLTAGE_ADDRESS, voltageInByte, DATA_READ_OFFSET, DATA_BYTE_SIZE);
+        device.read(DATA_VOLTAGE_ADDRESS, voltageInByte, DATA_READ_OFFSET, DATA_BYTE_SIZE);
         byte[] currentInByte = new byte[DATA_BYTE_SIZE];
-        analogDigitalConverter.read(DATA_CURRENT_ADDRESS, currentInByte, DATA_READ_OFFSET, DATA_BYTE_SIZE);
+        device.read(DATA_CURRENT_ADDRESS, currentInByte, DATA_READ_OFFSET, DATA_BYTE_SIZE);
         INA219VoltageCurrentSensor.Data data = new INA219VoltageCurrentSensor.Data(
                 calculateVoltage(voltageInByte[0], voltageInByte[1]),
                 calculateCurrent(currentInByte[0], currentInByte[1])
