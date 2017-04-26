@@ -5,30 +5,28 @@
  */
 package com.codemine.iot.device.sensor;
 
-import com.codemine.iot.device.sensor.PollingSensor;
-import com.ghgande.j2mod.modbus.ModbusException;
 import com.ghgande.j2mod.modbus.facade.ModbusSerialMaster;
 import com.ghgande.j2mod.modbus.procimg.InputRegister;
 import com.ghgande.j2mod.modbus.util.SerialParameters;
+import org.apache.log4j.Logger;
 
 /**
  *
  * @author benchan
  */
-public class ModbusSoilHumiditySensor extends PollingSensor<ModbusSoilHumiditySensor.Data>{
-    public static class Data {
+public class ModbusSoilHumiditySensor extends PollingSensor<ModbusSoilHumiditySensor.OutputValue> {
 
-        public Data(int temperatureInCelsius, int dryLevel) {
+    private static final Logger logger = Logger.getLogger(ModbusSoilHumiditySensor.class);
+
+    public static class OutputValue {
+
+        private final int temperatureInCelsius;
+        private final int dryLevel;
+
+        public OutputValue(int temperatureInCelsius, int dryLevel) {
             this.temperatureInCelsius = temperatureInCelsius;
             this.dryLevel = dryLevel;
         }
-        
-        public Data(){
-            
-        }
-
-        private int temperatureInCelsius;
-        private int dryLevel;
 
         /**
          * @return the temperatureInCelsius
@@ -46,7 +44,7 @@ public class ModbusSoilHumiditySensor extends PollingSensor<ModbusSoilHumiditySe
     }
 
     private ModbusSerialMaster serialMaster = null;
-    
+
     public ModbusSoilHumiditySensor(String serialPortName) throws Exception {
         SerialParameters params = new SerialParameters();
         params.setPortName(serialPortName);
@@ -60,19 +58,23 @@ public class ModbusSoilHumiditySensor extends PollingSensor<ModbusSoilHumiditySe
     }
 
     @Override
-    public Data readData() throws ModbusException {
+    public OutputValue readOutputValue() {
+        try {
+            InputRegister[] temperatureRegisters = serialMaster.readInputRegisters(1, 0, 1);
+            byte temperatureLowByte = temperatureRegisters[0].toBytes()[0];
+            byte temperatureHighByte = temperatureRegisters[0].toBytes()[1];
 
-        InputRegister[] temperatureRegisters = serialMaster.readInputRegisters(1, 0, 1);
-        byte temperatureLowByte = temperatureRegisters[0].toBytes()[0];
-        byte temperatureHighByte = temperatureRegisters[0].toBytes()[1];
+            final int temperature = ((temperatureLowByte * 256) + temperatureHighByte) / 100;
 
-        final int temperature = ((temperatureLowByte * 256) + temperatureHighByte) / 100;
+            InputRegister[] dryLevelRegisters = serialMaster.readInputRegisters(1, 4, 1);
+            byte dryLevelLowByte = dryLevelRegisters[0].toBytes()[0];
+            byte dryLevelHighByte = dryLevelRegisters[0].toBytes()[0];
 
-        InputRegister[] dryLevelRegisters = serialMaster.readInputRegisters(1, 4, 1);
-        byte dryLevelLowByte = dryLevelRegisters[0].toBytes()[0];
-        byte dryLevelHighByte = dryLevelRegisters[0].toBytes()[0];
-
-        final int dryLevel = ((dryLevelLowByte * 256) + dryLevelHighByte);
-        return new Data(temperature,dryLevel);
+            final int dryLevel = ((dryLevelLowByte * 256) + dryLevelHighByte);
+            return new OutputValue(temperature, dryLevel);
+        } catch (Throwable t) {
+            logger.error("readOutputValue", t);
+        }
+        return new OutputValue(-1, -1);
     }
 }

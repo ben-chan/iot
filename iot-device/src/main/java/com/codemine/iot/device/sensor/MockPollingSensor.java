@@ -22,7 +22,7 @@ public class MockPollingSensor<Data> extends PollingSensor<Data>{
     }
 
     @Override
-    public Data readData() throws Throwable {
+    public Data readOutputValue() throws Throwable {
         logger.info("readData mockData="+this.mockData.toString());
         return this.mockData;
     }

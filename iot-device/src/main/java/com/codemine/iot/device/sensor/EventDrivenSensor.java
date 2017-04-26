@@ -11,7 +11,7 @@ import com.codemine.iot.device.sensor.Sensor;
  *
  * @author demof
  */
-public abstract class EventDrivenSensor<Data> extends Sensor<Data> {
+public abstract class EventDrivenSensor<OutputValue> extends Sensor<OutputValue> {
     public abstract void startListenEvent();
     public abstract void stopListenEvent();
 }

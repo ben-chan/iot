@@ -30,7 +30,7 @@ public class MockEventDrivenSensor<Data> extends EventDrivenSensor<Data> {
     }
 
     @Override
-    public Data readData() throws Throwable {
+    public Data readOutputValue() throws Throwable {
         return this.mockData;
     }
 

@@ -19,13 +19,13 @@ import java.math.BigDecimal;
  *
  * @author demof
  */
-public class HallEffectWaterFlowSensor extends EventDrivenSensor<HallEffectWaterFlowSensor.Data> {
+public class HallEffectWaterFlowSensor extends EventDrivenSensor<HallEffectWaterFlowSensor.OutputValue> {
 
-    public static class Data {
+    public static class OutputValue {
 
         private BigDecimal totalMillilitre;
 
-        public Data(BigDecimal totalMillilitre) {
+        public OutputValue(BigDecimal totalMillilitre) {
             this.totalMillilitre = totalMillilitre;
         }
 
@@ -73,8 +73,6 @@ public class HallEffectWaterFlowSensor extends EventDrivenSensor<HallEffectWater
     }
     private final GpioPinDigitalInput gpioInputPin;
     private boolean startListenEvent = false;
-    private final int pulsePerLiter = 450;
-    private final int millilitrePerLiter = 1000;
     private final PulseListener pulseListener = new PulseListener();
 
     public HallEffectWaterFlowSensor(GpioController gpioController, Pin inputPin) {
@@ -82,8 +80,8 @@ public class HallEffectWaterFlowSensor extends EventDrivenSensor<HallEffectWater
     }
 
     @Override
-    public HallEffectWaterFlowSensor.Data readData() throws Throwable {
-        return new HallEffectWaterFlowSensor.Data(BigDecimal.valueOf(pulseListener.getPulseCount() * 2.27));
+    public HallEffectWaterFlowSensor.OutputValue readOutputValue() throws Throwable {
+        return new HallEffectWaterFlowSensor.OutputValue(BigDecimal.valueOf(pulseListener.getPulseCount() * 2.27));
     }
 
     @Override

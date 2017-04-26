@@ -11,6 +11,6 @@ import com.codemine.iot.device.sensor.Sensor;
  *
  * @author demof
  */
-public abstract class PollingSensor<Data> extends Sensor<Data> {
-    
+public abstract class PollingSensor<OutputValue> extends Sensor<OutputValue> {
+
 }

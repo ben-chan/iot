@@ -9,6 +9,6 @@ package com.codemine.iot.device.sensor;
  *
  * @author benchan
  */
-public abstract class Sensor<Data> {
-    public abstract Data readData() throws Throwable;
+public abstract class Sensor<OutputValue> {
+    public abstract OutputValue readOutputValue() throws Throwable;
 }
