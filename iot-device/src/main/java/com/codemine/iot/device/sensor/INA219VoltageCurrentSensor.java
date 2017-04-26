@@ -27,11 +27,11 @@ public class INA219VoltageCurrentSensor extends PollingSensor<INA219VoltageCurre
     public static class OutputValue {
         
         final private double voltage;
-        final private double currentInAmp;
+        final private double currentInMA;
         
         public OutputValue(double voltage, double currentInAmp) {
             this.voltage = voltage;
-            this.currentInAmp = currentInAmp;
+            this.currentInMA = currentInAmp;
         }
 
         /**
@@ -44,8 +44,8 @@ public class INA219VoltageCurrentSensor extends PollingSensor<INA219VoltageCurre
         /**
          * @return the currentInAmp
          */
-        public double getCurrentInAmp() {
-            return currentInAmp;
+        public double getCurrentInMA() {
+            return currentInMA;
         }
     }
     
