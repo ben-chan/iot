@@ -50,15 +50,18 @@ public class SHT30TemperatureAndHumiditySensor extends PollingSensor<SHT30Temper
 
     public SHT30TemperatureAndHumiditySensor(I2CBus i2cBus, int deviceAddress) throws IOException {
         device = i2cBus.getDevice(deviceAddress);
-        byte[] config = new byte[CONFIG_BYTE_SIZE];
-        config[0] = 0x2c;
-        config[1] = 0x06;
-        this.device.write(config);
+        if (device==null){
+            throw new IOException("SHT30TemperatureAndHumiditySensor device null");
+        }
     }
 
     @Override
     public OutputValue readOutputValue() throws Throwable {
         try {
+            byte[] config = new byte[CONFIG_BYTE_SIZE];
+            config[0] = 0x2c;
+            config[1] = 0x06;
+            this.device.write(config);
             // Read 6 bytes of data
             // Temp msb, Temp lsb, Temp CRC, Humididty msb, Humidity lsb, Humidity CRC
             byte[] data = new byte[DATA_BYTE_SIZE];
@@ -69,12 +72,11 @@ public class SHT30TemperatureAndHumiditySensor extends PollingSensor<SHT30Temper
             double cTemp = -45 + (175 * temp / 65535.0);
             double fTemp = -49 + (315 * temp / 65535.0);
             double humidity = 100 * (((data[3] & 0xFF) * 256) + (data[4] & 0xFF)) / 65535.0;
-            return new SHT30TemperatureAndHumiditySensor.OutputValue(cTemp, humidity);
+            return new SHT30TemperatureAndHumiditySensor.OutputValue(humidity,cTemp);
         } catch (Throwable t) {
-            logger.error("readOutputValue",t);
+            logger.error("readOutputValue", t);
         }
         return new SHT30TemperatureAndHumiditySensor.OutputValue(-1, -1);
     }
 
-   
 }
