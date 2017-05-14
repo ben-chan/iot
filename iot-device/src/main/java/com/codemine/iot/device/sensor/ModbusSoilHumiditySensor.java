@@ -68,7 +68,7 @@ public class ModbusSoilHumiditySensor extends PollingSensor<ModbusSoilHumiditySe
 
             InputRegister[] dryLevelRegisters = serialMaster.readInputRegisters(1, 4, 1);
             byte dryLevelLowByte = dryLevelRegisters[0].toBytes()[0];
-            byte dryLevelHighByte = dryLevelRegisters[0].toBytes()[0];
+            byte dryLevelHighByte = dryLevelRegisters[0].toBytes()[1];
 
             final int dryLevel = ((dryLevelLowByte * 256) + dryLevelHighByte);
             return new OutputValue(temperature, dryLevel);
