@@ -11,11 +11,11 @@ import com.codemine.iot.device.sensor.EventDrivenSensor;
  *
  * @author demof
  */
-public class MockEventDrivenSensor<Data> extends EventDrivenSensor<Data> {
+public class MockEventDrivenSensor<OutputValue> extends EventDrivenSensor<OutputValue> {
 
-    private Data mockData;
+    private OutputValue mockData;
 
-    public MockEventDrivenSensor(Data mockData) {
+    public MockEventDrivenSensor(OutputValue mockData) {
         this.mockData = mockData;
     }
 
@@ -30,7 +30,7 @@ public class MockEventDrivenSensor<Data> extends EventDrivenSensor<Data> {
     }
 
     @Override
-    public Data readOutputValue() throws Throwable {
+    public OutputValue readOutputValue() throws Throwable {
         return this.mockData;
     }
 

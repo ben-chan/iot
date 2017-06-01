@@ -13,16 +13,16 @@ import com.codemine.iot.device.camera.MockCamera;
  *
  * @author benchan
  */
-public class MockPollingSensor<Data> extends PollingSensor<Data>{
+public class MockPollingSensor<OutputValue> extends PollingSensor<OutputValue>{
     private static Logger logger = Logger.getLogger(MockPollingSensor.class);
     
-    private Data mockData;
-    public MockPollingSensor(Data mockData){
+    private OutputValue mockData;
+    public MockPollingSensor(OutputValue mockData){
         this.mockData=mockData;
     }
 
     @Override
-    public Data readOutputValue() throws Throwable {
+    public OutputValue readOutputValue() throws Throwable {
         logger.info("readData mockData="+this.mockData.toString());
         return this.mockData;
     }
