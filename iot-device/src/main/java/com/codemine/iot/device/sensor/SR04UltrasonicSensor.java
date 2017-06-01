@@ -6,8 +6,10 @@
 package com.codemine.iot.device.sensor;
 
 import com.codemine.iot.device.sensor.SR04UltrasonicSensor.OutputValue;
+import com.pi4j.io.gpio.GpioController;
 import com.pi4j.io.gpio.GpioPinDigitalInput;
 import com.pi4j.io.gpio.GpioPinDigitalOutput;
+import com.pi4j.io.gpio.Pin;
 import com.pi4j.io.gpio.event.GpioPinDigitalStateChangeEvent;
 import com.pi4j.io.gpio.event.GpioPinListenerDigital;
 import java.util.Date;
@@ -18,7 +20,7 @@ import java.util.concurrent.locks.ReentrantLock;
  * @author benchan
  */
 public class SR04UltrasonicSensor extends PollingSensor<OutputValue> {
-    
+
     private final GpioPinDigitalOutput triggerPin;
     private final GpioPinDigitalInput echoPin;
     private final Date startTime = null;
@@ -27,38 +29,13 @@ public class SR04UltrasonicSensor extends PollingSensor<OutputValue> {
     private final ReentrantLock lock = new ReentrantLock();
     private final static int MS_PER_SECOND = 1000;
     private final static int ULTRA_SONIC_SINGLE_TRIP_SPEED_PER_SECOND = 17150;
-    
-    public SR04UltrasonicSensor(GpioPinDigitalOutput triggerPin, GpioPinDigitalInput echoPin) {
-        this.triggerPin = triggerPin;
-        this.echoPin = echoPin;
-        this.echoPin.addListener((GpioPinListenerDigital) (GpioPinDigitalStateChangeEvent changeEvent) -> {
-            if (changeEvent.getState().isHigh()) {
-                final long durationInMS = stopTime.getTime() - startTime.getTime();
-                final long durationInSecond = durationInMS / MS_PER_SECOND;
-                double distanceInCM = ULTRA_SONIC_SINGLE_TRIP_SPEED_PER_SECOND * durationInSecond;
-                outputValue.setDistanceInCM(distanceInCM);
-                lock.unlock();
-            }
-        });
-    }
-    
-    @Override
-    public OutputValue readOutputValue() throws Throwable {
-        lock.lock();
-        this.triggerPin.high();
-        Thread.sleep(1);
-        this.triggerPin.low();
-        startTime.setTime(new Date().getTime());
-        lock.tryLock();        
-        return this.outputValue;
-    }
-    
+
     public static class OutputValue {
-        
+
         private double distanceInCM;
-        
+
         public OutputValue() {
-            
+
         }
 
         /**
@@ -74,6 +51,32 @@ public class SR04UltrasonicSensor extends PollingSensor<OutputValue> {
         public void setDistanceInCM(double distanceInCM) {
             this.distanceInCM = distanceInCM;
         }
-        
+
     }
+
+    public SR04UltrasonicSensor(GpioController gpioController, Pin triggerPin, Pin echoPin) {
+        this.triggerPin = gpioController.provisionDigitalOutputPin(triggerPin);
+        this.echoPin = gpioController.provisionDigitalInputPin(echoPin);
+        this.echoPin.addListener((GpioPinListenerDigital) (GpioPinDigitalStateChangeEvent changeEvent) -> {
+            if (changeEvent.getState().isHigh()) {
+                final long durationInMS = stopTime.getTime() - startTime.getTime();
+                final long durationInSecond = durationInMS / MS_PER_SECOND;
+                double distanceInCM = ULTRA_SONIC_SINGLE_TRIP_SPEED_PER_SECOND * durationInSecond;
+                outputValue.setDistanceInCM(distanceInCM);
+                lock.unlock();
+            }
+        });
+    }
+
+    @Override
+    public OutputValue readOutputValue() throws Throwable {
+        lock.lock();
+        this.triggerPin.high();
+        Thread.sleep(1);
+        this.triggerPin.low();
+        startTime.setTime(new Date().getTime());
+        lock.tryLock();
+        return this.outputValue;
+    }
+
 }
