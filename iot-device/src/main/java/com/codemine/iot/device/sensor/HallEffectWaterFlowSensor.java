@@ -14,12 +14,15 @@ import com.pi4j.io.gpio.PinState;
 import com.pi4j.io.gpio.event.GpioPinDigitalStateChangeEvent;
 import com.pi4j.io.gpio.event.GpioPinListenerDigital;
 import java.math.BigDecimal;
+import java.util.concurrent.atomic.AtomicInteger;
+import org.apache.log4j.Logger;
 
 /**
  *
  * @author demof
  */
 public class HallEffectWaterFlowSensor extends EventDrivenSensor<HallEffectWaterFlowSensor.OutputValue> {
+    private static final Logger logger = Logger.getLogger(HallEffectWaterFlowSensor.class);
 
     public static class OutputValue {
 
@@ -47,12 +50,13 @@ public class HallEffectWaterFlowSensor extends EventDrivenSensor<HallEffectWater
 
     private class PulseListener implements GpioPinListenerDigital {
 
-        private int pulseCount;
+        private AtomicInteger pulseCount=new AtomicInteger(0);
 
         @Override
         public void handleGpioPinDigitalStateChangeEvent(GpioPinDigitalStateChangeEvent gpdsce) {
             if (gpdsce.getState() == PinState.LOW) {
-                ++pulseCount;
+                pulseCount.incrementAndGet();
+                logger.info("pulse");
             }
         }
 
@@ -60,19 +64,18 @@ public class HallEffectWaterFlowSensor extends EventDrivenSensor<HallEffectWater
          * @return the pulseCount
          */
         public int getPulseCount() {
-            return pulseCount;
+            return pulseCount.intValue();
         }
 
         /**
          * @param pulseCount the pulseCount to set
          */
         public void resetPulseCount() {
-            this.pulseCount = 0;
+            this.pulseCount.set(0);
         }
 
     }
     private final GpioPinDigitalInput gpioInputPin;
-    private boolean startListenEvent = false;
     private final PulseListener pulseListener = new PulseListener();
 
     public HallEffectWaterFlowSensor(GpioController gpioController, Pin inputPin) {
@@ -86,22 +89,14 @@ public class HallEffectWaterFlowSensor extends EventDrivenSensor<HallEffectWater
 
     @Override
     public void startListenEvent() {
-        if (startListenEvent) {
-            return;
-        }
+        this.stopListenEvent();
         pulseListener.resetPulseCount();
         this.gpioInputPin.addListener(pulseListener);
-        startListenEvent = true;
-
     }
 
     @Override
     public void stopListenEvent() {
-        if (!startListenEvent) {
-            return;
-        }
-        this.gpioInputPin.removeAllListeners();
-        startListenEvent = false;
+        this.gpioInputPin.removeAllListeners();        
     }
 
 }
