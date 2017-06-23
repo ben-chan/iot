@@ -98,5 +98,7 @@ public class HallEffectWaterFlowSensor extends EventDrivenSensor<HallEffectWater
     public void stopListenEvent() {
         this.gpioInputPin.removeAllListeners();        
     }
-
+	public void reset(){
+	pulseListener.resetPulseCount();
+}
 }
