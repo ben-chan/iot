@@ -12,6 +12,5 @@ package com.codemine.iot.device.sensor;
 public abstract class Sensor<OutputValue> {
 	public abstract OutputValue readOutputValue() throws Throwable;
 
-	public void reset() {
-	}
+	
 }

@@ -97,8 +97,8 @@ public class HallEffectWaterFlowSensor extends
 
 	@Override
 	public void startListenEvent() {
-		this.stopListenEvent();
-		pulseListener.resetPulseCount();
+	    	this.stopListenEvent();
+	    	pulseListener.resetPulseCount();
 		this.gpioInputPin.addListener(pulseListener);
 	}
 
@@ -107,8 +107,4 @@ public class HallEffectWaterFlowSensor extends
 		this.gpioInputPin.removeAllListeners();
 	}
 
-	@Override
-	public void reset() {
-		pulseListener.resetPulseCount();
-	}
 }
