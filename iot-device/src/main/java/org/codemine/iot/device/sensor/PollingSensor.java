@@ -3,14 +3,14 @@
  * To change this template file, choose Tools | Templates
  * and open the template in the editor.
  */
-package com.codemine.iot.device.camera;
+package org.codemine.iot.device.sensor;
 
-import java.awt.image.BufferedImage;
+import org.codemine.iot.device.sensor.Sensor;
 
 /**
  *
- * @author benchan
+ * @author demof
  */
-public abstract class Camera {
-    public abstract BufferedImage takePhoto() throws Throwable;
+public abstract class PollingSensor<OutputValue> extends Sensor<OutputValue> {
+
 }

@@ -3,9 +3,9 @@
  * To change this template file, choose Tools | Templates
  * and open the template in the editor.
  */
-package com.codemine.iot.device.sensor;
+package org.codemine.iot.device.sensor;
 
-import com.codemine.iot.device.sensor.PollingSensor;
+import org.codemine.iot.device.sensor.PollingSensor;
 import com.pi4j.io.i2c.I2CBus;
 import com.pi4j.io.i2c.I2CDevice;
 import java.io.IOException;

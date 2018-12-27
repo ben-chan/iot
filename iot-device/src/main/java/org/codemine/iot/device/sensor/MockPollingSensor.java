@@ -3,11 +3,11 @@
  * To change this template file, choose Tools | Templates
  * and open the template in the editor.
  */
-package com.codemine.iot.device.sensor;
+package org.codemine.iot.device.sensor;
 
-import com.codemine.iot.device.sensor.PollingSensor;
+import org.codemine.iot.device.sensor.PollingSensor;
 import org.apache.log4j.Logger;
-import com.codemine.iot.device.camera.MockCamera;
+import org.codemine.iot.device.camera.MockCamera;
 
 /**
  *
