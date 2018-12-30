@@ -3,9 +3,9 @@
  * To change this template file, choose Tools | Templates
  * and open the template in the editor.
  */
-package com.codemine.iot.device.camera;
+package org.codemine.iot.device.camera;
 
-import com.codemine.iot.device.sensor.INA219VoltageCurrentSensor;
+import org.codemine.iot.device.sensor.INA219VoltageCurrentSensor;
 import com.github.sarxos.webcam.Webcam;
 import com.github.sarxos.webcam.ds.v4l4j.V4l4jDriver;
 import java.awt.Dimension;

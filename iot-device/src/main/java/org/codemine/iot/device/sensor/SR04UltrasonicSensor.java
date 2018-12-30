@@ -3,9 +3,9 @@
  * To change this template file, choose Tools | Templates
  * and open the template in the editor.
  */
-package com.codemine.iot.device.sensor;
+package org.codemine.iot.device.sensor;
 
-import com.codemine.iot.device.sensor.SR04UltrasonicSensor.OutputValue;
+import org.codemine.iot.device.sensor.SR04UltrasonicSensor.OutputValue;
 import com.pi4j.io.gpio.GpioController;
 import com.pi4j.io.gpio.GpioPinDigitalInput;
 import com.pi4j.io.gpio.GpioPinDigitalOutput;

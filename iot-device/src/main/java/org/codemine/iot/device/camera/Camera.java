@@ -3,7 +3,7 @@
  * To change this template file, choose Tools | Templates
  * and open the template in the editor.
  */
-package com.codemine.iot.device.camera;
+package org.codemine.iot.device.camera;
 
 import java.awt.image.BufferedImage;
 

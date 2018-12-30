@@ -3,9 +3,8 @@
  * To change this template file, choose Tools | Templates
  * and open the template in the editor.
  */
-package com.codemine.iot.device.sensor;
+package org.codemine.iot.device.sensor;
 
-import com.codemine.iot.device.sensor.PollingSensor;
 import com.pi4j.io.i2c.I2CBus;
 import com.pi4j.io.i2c.I2CDevice;
 import java.io.IOException;
@@ -22,7 +21,7 @@ public class INA219VoltageCurrentSensor extends PollingSensor<INA219VoltageCurre
     private static final int DATA_READ_OFFSET = 0;
     private static final int DATA_VOLTAGE_ADDRESS = 2;
     private static final int DATA_CURRENT_ADDRESS = 1;
-    private static final Logger logger = Logger.getLogger(INA219VoltageCurrentSensor.class);
+    private static final Logger logger = Logger.getLogger(INA219VoltageCurrentSensor.class);    
     
     public static class OutputValue {
         
