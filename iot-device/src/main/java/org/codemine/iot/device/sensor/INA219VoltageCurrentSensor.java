@@ -15,19 +15,19 @@ import org.apache.log4j.Logger;
  * @author root
  */
 public class INA219VoltageCurrentSensor extends PollingSensor<INA219VoltageCurrentSensor.OutputValue> {
-    
+
     private final I2CDevice device;
     private static final int DATA_BYTE_SIZE = 2;
     private static final int DATA_READ_OFFSET = 0;
     private static final int DATA_VOLTAGE_ADDRESS = 2;
     private static final int DATA_CURRENT_ADDRESS = 1;
-    private static final Logger logger = Logger.getLogger(INA219VoltageCurrentSensor.class);    
-    
+    private static final Logger logger = Logger.getLogger(INA219VoltageCurrentSensor.class);
+
     public static class OutputValue {
-        
+
         final private double voltage;
         final private double currentInMA;
-        
+
         public OutputValue(double voltage, double currentInAmp) {
             this.voltage = voltage;
             this.currentInMA = currentInAmp;
@@ -47,11 +47,11 @@ public class INA219VoltageCurrentSensor extends PollingSensor<INA219VoltageCurre
             return currentInMA;
         }
     }
-    
+
     public INA219VoltageCurrentSensor(I2CBus i2cBus, int deviceAddress) throws IOException {
         device = i2cBus.getDevice(deviceAddress);
     }
-    
+
     @Override
     public INA219VoltageCurrentSensor.OutputValue readOutputValue() throws Throwable {
         try {
@@ -69,12 +69,12 @@ public class INA219VoltageCurrentSensor extends PollingSensor<INA219VoltageCurre
         }
         return new INA219VoltageCurrentSensor.OutputValue(-1, -1);
     }
-    
+
     private double calculateVoltage(byte firstByte, byte secondByte) {
         int nonDataBitShiftCount = 3;
         return ((double) convertFrom16Bits(firstByte, secondByte, nonDataBitShiftCount)) / 1000 * 4;
     }
-    
+
     private double calculateCurrent(byte firstByte, byte secondByte) {
         String firstByteString = convertToBinaryString(firstByte);
         if (firstByteString.charAt(0) == '1') {
@@ -87,7 +87,7 @@ public class INA219VoltageCurrentSensor extends PollingSensor<INA219VoltageCurre
         String byteString = firstByteString + secondByteString;
         return (double) Integer.parseInt(byteString, 2) / 10;
     }
-    
+
     private int convertFrom16Bits(byte firstByte, byte secondByte, int leftShiftCount) {
         String firstByteString = convertToBinaryString(firstByte);
         String secondByteString = convertToBinaryString(secondByte);
@@ -97,7 +97,7 @@ public class INA219VoltageCurrentSensor extends PollingSensor<INA219VoltageCurre
         }
         return Integer.parseInt(byteString, 2);
     }
-    
+
     private String convertToBinaryString(byte data) {
         final int positiveValueBinaryLength = Integer.toBinaryString(Byte.MAX_VALUE).length();
         String binaryString = Integer.toBinaryString(data);
@@ -110,5 +110,5 @@ public class INA219VoltageCurrentSensor extends PollingSensor<INA219VoltageCurre
         }
         return binaryString;
     }
-    
+
 }

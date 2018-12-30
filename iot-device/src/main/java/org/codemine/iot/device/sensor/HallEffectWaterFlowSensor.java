@@ -18,92 +18,93 @@ import java.util.concurrent.atomic.AtomicInteger;
 import org.apache.log4j.Logger;
 
 /**
- *
+ * 
  * @author demof
  */
 public class HallEffectWaterFlowSensor extends
-        EventDrivenSensor<HallEffectWaterFlowSensor.OutputValue> {
+		EventDrivenSensor<HallEffectWaterFlowSensor.OutputValue> {
+	private static final Logger logger = Logger
+			.getLogger(HallEffectWaterFlowSensor.class);
 
-    private static final Logger logger = Logger
-            .getLogger(HallEffectWaterFlowSensor.class);
+	public static class OutputValue {
 
-    public static class OutputValue {
+		private BigDecimal totalMillilitre;
 
-        private BigDecimal totalMillilitre;
+		public OutputValue(BigDecimal totalMillilitre) {
+			this.totalMillilitre = totalMillilitre;
+		}
 
-        public OutputValue(BigDecimal totalMillilitre) {
-            this.totalMillilitre = totalMillilitre;
-        }
+		/**
+		 * @return the totalMillilitre
+		 */
+		public BigDecimal getTotalMillilitre() {
+			return totalMillilitre;
+		}
 
-        /**
-         * @return the totalMillilitre
-         */
-        public BigDecimal getTotalMillilitre() {
-            return totalMillilitre;
-        }
+		/**
+		 * @param totalMillilitre
+		 *            the totalMillilitre to set
+		 */
+		public void setTotalMillilitre(BigDecimal totalMillilitre) {
+			this.totalMillilitre = totalMillilitre;
+		}
 
-        /**
-         * @param totalMillilitre the totalMillilitre to set
-         */
-        public void setTotalMillilitre(BigDecimal totalMillilitre) {
-            this.totalMillilitre = totalMillilitre;
-        }
+	}
 
-    }
+	private class PulseListener implements GpioPinListenerDigital {
 
-    private class PulseListener implements GpioPinListenerDigital {
+		private AtomicInteger pulseCount = new AtomicInteger(0);
 
-        private AtomicInteger pulseCount = new AtomicInteger(0);
+		@Override
+		public void handleGpioPinDigitalStateChangeEvent(
+				GpioPinDigitalStateChangeEvent gpdsce) {
+			if (gpdsce.getState() == PinState.LOW) {
+				pulseCount.incrementAndGet();
+			}
+		}
 
-        @Override
-        public void handleGpioPinDigitalStateChangeEvent(
-                GpioPinDigitalStateChangeEvent gpdsce) {
-            if (gpdsce.getState() == PinState.LOW) {
-                pulseCount.incrementAndGet();
-            }
-        }
+		/**
+		 * @return the pulseCount
+		 */
+		public int getPulseCount() {
+			return pulseCount.intValue();
+		}
 
-        /**
-         * @return the pulseCount
-         */
-        public int getPulseCount() {
-            return pulseCount.intValue();
-        }
+		/**
+		 * @param pulseCount
+		 *            the pulseCount to set
+		 */
+		public void resetPulseCount() {
+			this.pulseCount.set(0);
+		}
 
-        /**
-         * @param pulseCount the pulseCount to set
-         */
-        public void resetPulseCount() {
-            this.pulseCount.set(0);
-        }
+	}
 
-    }
+	private final GpioPinDigitalInput gpioInputPin;
+	private final PulseListener pulseListener = new PulseListener();
 
-    private final GpioPinDigitalInput gpioInputPin;
-    private final PulseListener pulseListener = new PulseListener();
+	public HallEffectWaterFlowSensor(GpioController gpioController, Pin inputPin) {
+		gpioInputPin = gpioController.provisionDigitalInputPin(inputPin,
+				"WaterFlowSensor", PinPullResistance.PULL_UP);
+	}
 
-    public HallEffectWaterFlowSensor(GpioController gpioController, Pin inputPin) {
-        gpioInputPin = gpioController.provisionDigitalInputPin(inputPin,
-                "WaterFlowSensor", PinPullResistance.PULL_UP);
-    }
+	@Override
+	public HallEffectWaterFlowSensor.OutputValue readOutputValue()
+			throws Throwable {
+		return new HallEffectWaterFlowSensor.OutputValue(
+				BigDecimal.valueOf(pulseListener.getPulseCount() * 2.27));
+	}
 
-    @Override
-    public HallEffectWaterFlowSensor.OutputValue readOutputValue()
-            throws Throwable {
-        return new HallEffectWaterFlowSensor.OutputValue(
-                BigDecimal.valueOf(pulseListener.getPulseCount() * 2.27));
-    }
+	@Override
+	public void startListenEvent() {
+	    	this.stopListenEvent();
+	    	pulseListener.resetPulseCount();
+		this.gpioInputPin.addListener(pulseListener);
+	}
 
-    @Override
-    public void startListenEvent() {
-        this.stopListenEvent();
-        pulseListener.resetPulseCount();
-        this.gpioInputPin.addListener(pulseListener);
-    }
-
-    @Override
-    public void stopListenEvent() {
-        this.gpioInputPin.removeAllListeners();
-    }
+	@Override
+	public void stopListenEvent() {
+		this.gpioInputPin.removeAllListeners();
+	}
 
 }
