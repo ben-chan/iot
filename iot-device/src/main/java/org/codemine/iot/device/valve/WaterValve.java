@@ -10,6 +10,7 @@ import com.pi4j.io.gpio.GpioFactory;
 import com.pi4j.io.gpio.GpioPinDigitalOutput;
 import com.pi4j.io.gpio.Pin;
 import com.pi4j.io.gpio.RaspiPin;
+import org.codemine.iot.io.DeviceConfig;
 
 /**
  *
@@ -19,23 +20,36 @@ public class WaterValve extends Valve {
 
     private GpioPinDigitalOutput gpioOutputPin = null;
 
-    public WaterValve(GpioController gpio,Pin pin) {
+    private final DeviceConfig.TriggerLevel triggerlevel;
+
+    public WaterValve(GpioController gpio, Pin pin) {
+        this(gpio, pin, DeviceConfig.TriggerLevel.HIGH);
+    }
+
+    public WaterValve(GpioController gpio, Pin pin, DeviceConfig.TriggerLevel triggerLevel) {
         gpioOutputPin = gpio.provisionDigitalOutputPin(pin, "valve");
+        this.triggerlevel = triggerLevel;
     }
 
     @Override
     public Status off() {
-        gpioOutputPin.low();
-        assert(gpioOutputPin.isLow());
+        if (triggerlevel == DeviceConfig.TriggerLevel.HIGH) {
+            gpioOutputPin.low();
+        } else {
+            gpioOutputPin.high();
+        }
+
         return super.off();
     }
 
     @Override
     public Status on() {
-        gpioOutputPin.high();
-        assert(gpioOutputPin.isHigh());
+        if (triggerlevel == DeviceConfig.TriggerLevel.HIGH) {
+            gpioOutputPin.high();
+        } else {
+            gpioOutputPin.low();
+        }
         return super.on();
     }
-    
-    
+
 }
